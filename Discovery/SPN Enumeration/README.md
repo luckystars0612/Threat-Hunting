@@ -1,7 +1,8 @@
 # Information
 SPN stands for Service Principal Name in Windows. It is a unique identifier for a service instance used in Kerberos authentication. SPNs allow clients to identify and authenticate services within a network.
 ## Key features
-### Purpose: SPNs are used to associate a specific service instance with a service account (like a computer or user account) in Active Directory.
+### Purpose: 
+- SPNs are used to associate a specific service instance with a service account (like a computer or user account) in Active Directory.
 ### Usage:
 - Authentication: They enable Kerberos to authenticate services securely without needing passwords to be directly transmitted.
 - Delegation: SPNs are critical for features like Kerberos constrained delegation.
@@ -43,7 +44,7 @@ Client Presents the TGS Ticket to the Service:
 # Note
 - If a client or program runs on local system on machine wants to connect to remote service, SPN will be resolved for computer accounts
 ## Computer account credentials
-### 1.Password for the Computer Account:
+### 1. Password for the Computer Account:
 - Each computer account (e.g., COMP01$) in Active Directory has a secret password stored in the AD database.
 - This password is automatically generated and managed by Windows.
 By default, the password is 120 characters long and is regularly rotated (every 30 days, though this can be configured).
@@ -98,6 +99,7 @@ By default, the password is 120 characters long and is regularly rotated (every 
 - When a computer joins a domain, it establishes a trust relationship with the domain controller using its computer account.
 - The computer securely stores its password in the Local Security Authority (LSA) subsystem.
 - The password is used during authentication requests, like obtaining a TGT from the KDC.
+
 ***If computer is not joined domain, local accounts will be save on SAM (C:/Windows/system32/config/SAM), otherwise cache domains accounts will be saved on SECURITY hive (C:/Windows/system32/config/SECURITY). SYSTEM hive, which contains encryption keys for the SAM database is saved on %SystemRoot%\System32\config\SYSTEM***
 ***Sensitive information managed by LSA, such as cached credentials and service account passwords, is saved in the registry under HKEY_LOCAL_MACHINE\SECURITY\Policy\Secrets***
 <table border="1">
