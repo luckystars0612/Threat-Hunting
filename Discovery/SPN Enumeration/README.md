@@ -1,4 +1,4 @@
-# Information
+# I. Information
 SPN stands for Service Principal Name in Windows. It is a unique identifier for a service instance used in Kerberos authentication. SPNs allow clients to identify and authenticate services within a network.
 ## Key features
 ### Purpose: 
@@ -123,3 +123,63 @@ By default, the password is 120 characters long and is regularly rotated (every 
     </tr>
   </tbody>
 </table>
+
+# II. Resources
+## 1. [SPN discovery](https://pentestlab.blog/2018/06/04/spn-discovery/)
+### [SetSPN](https://learn.microsoft.com/en-us/archive/technet-wiki/18996.active-directory-powershell-script-to-list-all-spns-used#setspn)
+- Using setspn to find SPNs linked to a certain computer:
+```bash
+setspn -L <ServerName>
+```
+- Using setspn to find SPNs linked to a certain user account:
+```bash
+setspn -L <domain\user>
+```
+- List all SPNs in domain:
+```bash
+setspn -Q */*
+```
+### [Ldifde](https://learn.microsoft.com/en-us/archive/technet-wiki/18996.active-directory-powershell-script-to-list-all-spns-used#ldifde)
+***Note that ldifde only works on window server, not in windows 10 or 11***
+```bash
+Ldifde -d "DC=Contoso,DC=Com" -l ServicePrincipalName -F C:\SPN.txt
+```
+### [Pure powershell](https://learn.microsoft.com/en-us/archive/technet-wiki/18996.active-directory-powershell-script-to-list-all-spns-used#powershell)
+```powershell
+$search = New-Object DirectoryServices.DirectorySearcher([ADSI]"")
+$search.filter = "(servicePrincipalName=*)"
+$results = $search.Findall()
+foreach($result in $results)
+{
+    $userEntry = $result.GetDirectoryEntry()
+    Write-host "Object Name = " $userEntry.name -backgroundcolor "yellow" -foregroundcolor "black"
+    Write-host "DN = " $userEntry.distinguishedName
+    Write-host "Object Cat. = " $userEntry.objectCategory
+    Write-host "servicePrincipalNames"
+    $i=1
+    foreach($SPN in $userEntry.servicePrincipalName){
+        Write-host "SPN(" $i ") = " $SPN
+        $i+=1
+    }
+    Write-host ""
+}
+```
+### [GetUserSPNs](https://github.com/fortra/impacket/blob/master/examples/GetUserSPNs.py)
+### [GetUserSPNs vbs](https://github.com/nidem/kerberoast/blob/master/GetUserSPNs.vbs)
+```bash
+cscript.exe GetUserSPNs.vbs
+```
+### [PowerShell AD Recon](https://github.com/PyroTek3/PowerShell-AD-Recon)
+### [Empire](https://github.com/EmpireProject/Empire)
+```bash
+usemodule situational_awareness/network/get_spn
+```
+### [PowerShellery](https://github.com/nullbind/Powershellery)
+```bash
+Import-Module .\Get-SPN.psm1
+Get-SPN -type service -search "*" -List yes | Format-Table
+```
+### Impacket (GetUserSPNs.py)
+```bash
+./GetUserSPNs.py -dc-ip 10.0.0.1 pentestlab.local/test
+```
