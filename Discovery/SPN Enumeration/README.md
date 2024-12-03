@@ -183,3 +183,27 @@ Get-SPN -type service -search "*" -List yes | Format-Table
 ```bash
 ./GetUserSPNs.py -dc-ip 10.0.0.1 pentestlab.local/test
 ```
+## 2. [All class names of SPN](https://adsecurity.org/?page_id=183)
+
+# III. Hunting for suspicious SPN discovery
+- After examinating code from multiple sources, including Empire, impacket, PS AD Recon, or even native binary of Window, my custom python script. I realize that all tools must contains filter **servicePrincipalName**, this means LDAP queries required.
+- Therefore, as my opinion, hunt for any LDAP connection on port 389 or 636, and initiated from suspicious process like powershell, cmd, python, cscript,... maybe reveal some odd activities which are potential Keberoasting attack or network scanning.
+- This is core idea, but hunting queries must be changed base on organization environment.
+## 1. MDE hunt
+- hunt for odd powershell process
+```bash
+DeviceNetworkEvents
+| where RemotePort == 389 or RemotePort == 636  // LDAP ports (389 - LDAP, 636 - LDAPS)
+| where (InitiatingProcessCommandLine contains "powershell" or InitiatingProcessCommandLine contains "cmd" InitiatingProcessCommandLine contains "python" ) and (InitiatingProcessCommandLine !contains "defender")
+| where tolower(InitiatingProcessAccountName) !contains "system" and tolower(InitiatingProcessAccountName) !contains "local"
+| summarize by InitiatingProcessCommandLine, InitiatingProcessFolderPath, InitiatingProcessAccountName
+```
+- hunt for any executable files which initiate LDAP connection is not located on system folders
+```bash
+DeviceNetworkEvents
+| where RemotePort == 389 or RemotePort == 636  // LDAP ports (389 - LDAP, 636 - LDAPS)
+| where InitiatingProcessFileName != ""
+| where InitiatingProcessFolderPath !contains "system32" and InitiatingProcessFolderPath !contains "program files" and InitiatingProcessFolderPath !contains "teams"
+and InitiatingProcessFolderPath !contains "windows"
+| summarize by InitiatingProcessCommandLine, InitiatingProcessFolderPath, RemoteIP, RemotePort
+```
