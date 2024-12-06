@@ -1,0 +1,2 @@
+- Install Neo4j database, create new db and set password for it, then logon on bolt://localhost:7687 (default username is **neo4j**)
+- Data collected by collectors will be fitted into BloodHound through upload functions.
