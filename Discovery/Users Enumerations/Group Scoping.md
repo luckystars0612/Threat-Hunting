@@ -1,4 +1,4 @@
-[References](https://blog.harmj0y.net/activedirectory/a-pentesters-guide-to-group-scoping/)
+# [References](https://blog.harmj0y.net/activedirectory/a-pentesters-guide-to-group-scoping/)
 
 - Active Directory groups can have one of two types: distribution groups and security groups. "Distribution groups" are used for email distribution lists and cannot be used to control access to resources, so we don’t really care about them for our purposes. Most groups are “security groups” which CAN be used to control access and added into discretionary access control lists (DACLs). Whether or not a group is a security or distribution group is stored as a bit in its groupType property, detailed after the graphic below. 
 ![plot](./images/adgroup.png)
